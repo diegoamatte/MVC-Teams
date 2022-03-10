@@ -1,0 +1,27 @@
+﻿@model Teams.Models.Player
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="mb-2">Details</h1>
+
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="@Model.ImgUrl" class="img-fluid rounded-start" alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body d-flex flex-column h-100">
+        <h2 class="card-title">@Model.Name</h2>
+        <p class="card-text"><small class="text-muted">@Model.Age years old</small></p>
+        <p class="card-text">Born: @Model.Nationality</p>
+        <p class="card-text">Team: @Model.Team.Name</p>
+        <p class="card-text">League: @Model.Team.League</p>
+        <div class="flex-grow-1 d-flex justify-content-end">
+            <a class="btn btn-primary align-self-end" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

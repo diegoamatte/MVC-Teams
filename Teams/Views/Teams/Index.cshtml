@@ -1,0 +1,46 @@
+﻿@using Teams.Models
+@model PaginatedList<Teams.Models.Team>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
+
+<div class="list-group">
+    @foreach (var team in Model) {
+        @await Html.PartialAsync("/Views/Teams/_TeamListItemView.cshtml", team)
+    }
+</div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled":"";
+    var nextDisabled = !Model.HasNextPage ? "disabled":"";
+}
+
+<a asp-action="Index"
+    asp-route-current-filter="@ViewData["CurrentFilter"]"
+    asp-route-pageNumber="@(Model.PageIndex-1)"
+    class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+    asp-route-current-filter="@ViewData["CurrentFilter"]"
+    asp-route-pageNumber="@(Model.PageIndex+1)"
+    class="btn btn-default @nextDisabled">
+    Next
+</a>
+

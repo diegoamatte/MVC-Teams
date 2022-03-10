@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Teams.Models.Player>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="list-group">
+    @foreach (var player in Model) {
+        <div class="col">
+            @await Html.PartialAsync("/Views/Players/_PlayerView.cshtml", player)
+        </div>
+    }
+</div>

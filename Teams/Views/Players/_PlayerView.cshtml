@@ -1,0 +1,11 @@
+﻿@model Teams.Models.Player
+
+
+  <a asp-action="Details" asp-route-id="@Model.Id" class="list-group-item list-group-item-action" aria-current="true">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">@Model.Name</h5>
+      <small>@Model.Age years old</small>
+    </div>
+    <p class="mb-1">@Model.Team.Name</p>
+    <small>@Model.Team.League</small>
+  </a>
