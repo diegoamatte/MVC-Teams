@@ -2,18 +2,16 @@
 
 namespace Teams.Models
 {
-    public class Team
+    public class Team : Entity
     {
-        public Guid Id { get; set; }
+        [Required]
+        public string? Name { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string? League { get; set; }
 
         [Required]
-        public string League { get; set; }
-
-        [Required]
-        public string TeamLogoUrl { get; set; }
+        public string? TeamLogoUrl { get; set; }
 
     }
 }
