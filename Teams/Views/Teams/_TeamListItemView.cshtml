@@ -1,8 +1,8 @@
 ﻿@model Teams.Models.Team
 
-  <a asp-action="Details" asp-route-id="@Model.Id" class="list-group-item list-group-item-action" aria-current="true">
-    <div class="d-flex w-100 justify-content-start align-items-center">
+  <a asp-action="Details" asp-route-id="@Model.Id" class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between align-items-center">
       <img  class="me-2" src="@Model.TeamLogoUrl" width="40" />
-      <h5 class="mb-1">@Model.Name</h5>
+      <h5 class="flex-fill">@Model.Name</h5>
     </div>
   </a>
