@@ -1,4 +1,4 @@
-namespace Teams.Models
+namespace Teams.ViewModels
 {
     public class ErrorViewModel
     {
