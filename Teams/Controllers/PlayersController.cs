@@ -1,13 +1,11 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Teams.Models;
 using Teams.Data;
+using Teams.Models;
+using Teams.ViewModels;
 
 namespace Teams.Controllers
 {
@@ -23,8 +21,16 @@ namespace Teams.Controllers
         // GET: Players
         public async Task<IActionResult> Index()
         {
-            var teamsContext = _context.Player.Include(p => p.Team);
-            return View(await teamsContext.ToListAsync());
+            var viewModel = _context.Player.Select(
+                p => new PlayerIndexViewModel
+                {
+                    Age = p.Age, 
+                    Id = p.Id,
+                    Name = p.Name, 
+                    Nationality = p.Nationality, 
+                    Team = p.Team,
+                });
+            return View(viewModel);
         }
 
         // GET: Players/Details/5
@@ -49,8 +55,9 @@ namespace Teams.Controllers
         // GET: Players/Create
         public IActionResult Create()
         {
-            ViewData["TeamId"] = new SelectList(_context.Team, "Id", "Name");
-            return View();
+            var viewData = _context.Team.Select( 
+                t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name} );
+            return View(viewData);
         }
 
         // POST: Players/Create
@@ -58,17 +65,18 @@ namespace Teams.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Age,ImgUrl,Nationality,TeamId")] Player player)
+        public async Task<IActionResult> Create([Bind("Id,Name,Age,ImgUrl,Nationality,TeamId")] PlayerCreateViewModel playerCreated)
         {
             if (ModelState.IsValid)
             {
+                var player = playerCreated.Adapt<Player>();
                 player.Id = Guid.NewGuid();
                 _context.Add(player);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", player.TeamId);
-            return View(player);
+            //ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", playerCreated.TeamId);
+            return View(playerCreated);
         }
 
         // GET: Players/Edit/5
