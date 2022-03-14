@@ -53,10 +53,11 @@ namespace Teams.Controllers
         }
 
         // GET: Players/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
-            var viewData = _context.Team.Select( 
-                t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name} );
+            var teams = await _context.Team.Select( 
+                t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name} ).ToListAsync();
+            var viewData = new PlayerCreateViewModel { TeamList = teams };
             return View(viewData);
         }
 
