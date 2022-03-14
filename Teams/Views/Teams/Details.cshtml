@@ -1,4 +1,4 @@
-﻿@model Teams.Models.Team
+﻿@model Teams.ViewModels.Team.TeamDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -29,3 +29,23 @@
     <a asp-action="Delete" asp-route-id="@Model?.Id">Delete</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Nationality</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var player in Model!.Players)
+        {
+            <tr>
+                <td>@player.Name</td>
+                <td>@player.Age</td>
+                <td>@player.Nationality</td>
+            </tr>            
+        }
+    </tbody>
+</table>

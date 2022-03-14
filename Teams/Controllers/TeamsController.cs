@@ -1,8 +1,11 @@
 ﻿#nullable disable
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Teams.Data;
 using Teams.Models;
+using Teams.ViewModels.Team;
+using System.Linq;
 
 namespace Teams.Controllers
 {
@@ -43,7 +46,7 @@ namespace Teams.Controllers
                 teams = teams.OrderBy(t => t.Name);
             }
 
-            int pageSize = 3;
+            int pageSize = 5;
             return View(await PaginatedList<Team>.CreateAsync(teams.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -55,14 +58,17 @@ namespace Teams.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Team
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (team == null)
+            var details = await _context.Team
+                .Include(t => t.Players)
+                .ProjectToType<TeamDetailsViewModel>() 
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (details == null)
             {
                 return NotFound();
             }
 
-            return View(team);
+            return View(details);
         }
 
         // GET: Teams/Create

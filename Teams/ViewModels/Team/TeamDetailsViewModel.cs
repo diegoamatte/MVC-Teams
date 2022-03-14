@@ -1,22 +1,17 @@
-﻿using Mapster;
-using System.ComponentModel.DataAnnotations;
+﻿using Teams.Models;
 
-namespace Teams.Models
+namespace Teams.ViewModels.Team
 {
-
-    public class Team : Entity
+    public class TeamDetailsViewModel
     {
-        [Required]
+        public Guid Id { get; set; }
+
         public string Name { get; set; }
 
-        [Required]
         public string League { get; set; }
 
-        [Required]
-        [Url]
         public string? TeamLogoUrl { get; set; }
 
         public List<Player> Players { get; set; }
-
     }
 }
