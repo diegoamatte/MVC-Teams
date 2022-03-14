@@ -26,9 +26,7 @@ namespace Teams.Controllers
                 pageNumber = 1;
             }
 
-
-            var teams = from t in _context.Team
-                        select t;
+            var teams = _context.Team.AsQueryable();
 
             if (!String.IsNullOrEmpty(searchString))
             {
