@@ -20,6 +20,7 @@
         <p class="card-text">League: @Model.Team.League</p>
         <div class="flex-grow-1 d-flex justify-content-end">
             <a class="btn btn-primary align-self-end" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn btn-danger align-self-end" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
         </div>
       </div>
     </div>
