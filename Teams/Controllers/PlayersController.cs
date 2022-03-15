@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Teams.Data;
 using Teams.Models;
-using Teams.ViewModels;
+using Teams.ViewModels.Player;
 
 namespace Teams.Controllers
 {
@@ -19,18 +19,34 @@ namespace Teams.Controllers
         }
 
         // GET: Players
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber)
         {
-            var viewModel = _context.Player.Select(
-                p => new PlayerIndexViewModel
-                {
-                    Age = p.Age, 
-                    Id = p.Id,
-                    Name = p.Name, 
-                    Nationality = p.Nationality, 
-                    Team = p.Team,
-                });
-            return View(viewModel);
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+
+            var players = _context.Player.AsQueryable().ProjectToType<PlayerIndexViewModel>();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                players = players.Where(p => p.Name.Contains(searchString)
+                                       || p.Team.Name.Contains(searchString));
+            }
+
+            if (sortOrder == "name_desc")
+            {
+                players = players.OrderByDescending(p => p.Name);
+            }
+            else
+            {
+                players = players.OrderBy(t => t.Name);
+            }
+            int pageSize = 5;
+
+            return View(await PaginatedList<PlayerIndexViewModel>.CreateAsync(players.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Players/Details/5
@@ -53,11 +69,9 @@ namespace Teams.Controllers
         }
 
         // GET: Players/Create
-        public async Task<IActionResult> CreateAsync()
+        public async Task<IActionResult> CreateAsync(Guid? teamId)
         {
-            var teams = await _context.Team.Select( 
-                t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name} ).ToListAsync();
-            var viewData = new PlayerCreateViewModel { TeamList = teams };
+            var viewData = new PlayerCreateViewModel { TeamList = new SelectList(_context.Team, "Id", "Name", teamId??_context.Team.First().Id) };
             return View(viewData);
         }
 
@@ -66,7 +80,7 @@ namespace Teams.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Age,ImgUrl,Nationality,TeamId")] PlayerCreateViewModel playerCreated)
+        public async Task<IActionResult> Create([Bind("Name,Age,ImgUrl,Nationality,TeamId,TeamList")] PlayerCreateViewModel playerCreated)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +90,7 @@ namespace Teams.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", playerCreated.TeamId);
+            ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", playerCreated.TeamId);
             return View(playerCreated);
         }
 
@@ -89,12 +103,15 @@ namespace Teams.Controllers
             }
 
             var player = await _context.Player.FindAsync(id);
+
             if (player == null)
             {
                 return NotFound();
             }
-            ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", player.TeamId);
-            return View(player);
+            var viewModel = player.Adapt<PlayerEditViewModel>();
+            viewModel.TeamList = new SelectList(_context.Team, "Id", "Name", player.TeamId);
+
+            return View(viewModel);
         }
 
         // POST: Players/Edit/5
@@ -102,9 +119,9 @@ namespace Teams.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Age,ImgUrl,Nationality,TeamId")] Player player)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Age,ImgUrl,Nationality,TeamId,TeamList")] PlayerEditViewModel playerViewModel)
         {
-            if (id != player.Id)
+            if (id != playerViewModel.Id)
             {
                 return NotFound();
             }
@@ -113,12 +130,13 @@ namespace Teams.Controllers
             {
                 try
                 {
+                    var player = playerViewModel.Adapt<Player>();
                     _context.Update(player);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PlayerExists(player.Id))
+                    if (!PlayerExists(playerViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -129,8 +147,8 @@ namespace Teams.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_context.Team, "Id", "League", player.TeamId);
-            return View(player);
+            
+            return View(playerViewModel);
         }
 
         // GET: Players/Delete/5
