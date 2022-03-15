@@ -16,7 +16,7 @@ namespace Teams.Models
         [Url]
         public string? TeamLogoUrl { get; set; }
 
-        public List<Player> Players { get; set; }
+        public List<Player>? Players { get; set; }
 
     }
 }
