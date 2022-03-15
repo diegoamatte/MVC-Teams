@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Teams.ViewModels.Player
 {
-    public class PlayerCreateViewModel
+    public class PlayerEditViewModel
     {
-        [Required]  
+        [Required]
+        public Guid Id { get; set; }
+
+        [Required]
         public string? Name { get; set; }
 
         [Required]

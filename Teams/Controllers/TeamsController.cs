@@ -82,16 +82,17 @@ namespace Teams.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,League,TeamLogoUrl")] Team team)
+        public async Task<IActionResult> Create([Bind("Name,League,TeamLogoUrl")] CreateTeamViewModel teamViewModel)
         {
             if (ModelState.IsValid)
             {
+                var team = teamViewModel.Adapt<Team>();
                 team.Id = Guid.NewGuid();
                 _context.Add(team);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(team);
+            return View(teamViewModel);
         }
 
         // GET: Teams/Edit/5

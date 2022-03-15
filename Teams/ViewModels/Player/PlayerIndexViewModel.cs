@@ -1,6 +1,6 @@
 ﻿using Teams.Models;
 
-namespace Teams.ViewModels
+namespace Teams.ViewModels.Player
 {
     public class PlayerIndexViewModel
     {

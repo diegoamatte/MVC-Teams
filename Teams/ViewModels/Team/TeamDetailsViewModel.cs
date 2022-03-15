@@ -1,5 +1,4 @@
-﻿using Teams.Models;
-
+﻿
 namespace Teams.ViewModels.Team
 {
     public class TeamDetailsViewModel
@@ -12,6 +11,6 @@ namespace Teams.ViewModels.Team
 
         public string? TeamLogoUrl { get; set; }
 
-        public List<Player> Players { get; set; }
+        public List<Teams.Models.Player>? Players { get; set; }
     }
 }
